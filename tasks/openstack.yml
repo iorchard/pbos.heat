@@ -1,0 +1,111 @@
+---
+- name: OpenStack | create user
+  openstack.cloud.identity_user:
+    cloud: pbos
+    name: "{{ os_service_name }}"
+    password: "{{ os_password }}"
+    domain: default
+    default_project: service
+    state: present
+  delegate_to: "{{ groups['keystone'][0] }}"
+  run_once: true
+  no_log: true
+
+- name: OpenStack | add user to admin role
+  openstack.cloud.role_assignment:
+    cloud: pbos
+    user: "{{ os_service_name }}"
+    role: admin
+    project: service
+    state: present
+  delegate_to: "{{ groups['keystone'][0] }}"
+  run_once: true
+
+- name: OpenStack | create service
+  openstack.cloud.catalog_service:
+    cloud: pbos
+    name: "{{ item.name }}"
+    service_type: "{{ item.type }}"
+    description: OpenStack Orchestration Service
+    state: present
+  delegate_to: "{{ groups['keystone'][0] }}"
+  run_once: true
+  loop:
+    - {name: "{{ os_service_name }}", type: "orchestration"}
+    - {name: "{{ os_service_name }}-cfn", type: "cloudformation"}
+
+- name: OpenStack | create endpoints for orchestration service
+  openstack.cloud.endpoint:
+    cloud: pbos
+    service: "{{ os_service_name }}"
+    endpoint_interface: "{{ item }}"
+    url: "http://{{ keepalived_vip }}:{{ heat_port }}/v1/%(tenant_id)s"
+    region: RegionOne
+    state: present
+  loop: "{{ os_endpoint_interface }}"
+  delegate_to: "{{ groups['keystone'][0] }}"
+  run_once: true
+
+- name: OpenStack | create endpoints for cloudformation service
+  openstack.cloud.endpoint:
+    cloud: pbos
+    service: "{{ os_service_name }}-cfn"
+    endpoint_interface: "{{ item }}"
+    url: "http://{{ keepalived_vip }}:{{ heat_cfn_port }}/v1"
+    region: RegionOne
+    state: present
+  loop: "{{ os_endpoint_interface }}"
+  delegate_to: "{{ groups['keystone'][0] }}"
+  run_once: true
+
+- name: OpenStack | create heat domain
+  openstack.cloud.identity_domain:
+    cloud: pbos
+    name: heat
+    description: "Stack projects and users"
+    state: present
+  delegate_to: "{{ groups['keystone'][0] }}"
+  run_once: true
+
+- name: OpenStack | create heat domain admin user to manage heat domain
+  openstack.cloud.identity_user:
+    cloud: pbos
+    name: "heat_domain_admin"
+    password: "{{ os_password }}"
+    domain: heat
+    state: present
+  delegate_to: "{{ groups['keystone'][0] }}"
+  run_once: true
+  no_log: true
+
+- name: OpenStack | add admin role to heat domain admin user
+  openstack.cloud.role_assignment:
+    cloud: pbos
+    user: "heat_domain_admin"
+    role: admin
+    domain: heat
+    state: present
+  delegate_to: "{{ groups['keystone'][0] }}"
+  run_once: true
+
+- name: OpenStack | create heat stack roles
+  openstack.cloud.identity_role:
+    cloud: pbos
+    name: "{{ item }}"
+    state: present
+  delegate_to: "{{ groups['keystone'][0] }}"
+  run_once: true
+  loop:
+    - heat_stack_owner
+    - heat_stack_user
+
+- name: OpenStack | add heat stack owner role to admin user
+  openstack.cloud.role_assignment:
+    cloud: pbos
+    user: admin
+    project: admin
+    role: heat_stack_owner
+    state: present
+  delegate_to: "{{ groups['keystone'][0] }}"
+  run_once: true
+...

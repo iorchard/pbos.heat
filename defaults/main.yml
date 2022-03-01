@@ -1,0 +1,20 @@
+---
+offline: false
+openstack_release: "wallaby"
+keepalived_vip: ""
+os_service_name: "heat"
+db_password: "{{ heat_password }}"
+os_password: "{{ heat_password }}"
+rabbitmq_openstack_password: ~
+memcached_port: 11211
+keystone_port: 5000
+heat_port: 8004
+heat_cfn_port: 8000
+os_endpoint_interface:
+  - public
+  - internal
+  - admin
+mariadb_ca_cert: "/etc/my.cnf.d/certificates/ca-cert.pem"
+rabbitmq_ca_cert: "/etc/rabbitmq/certificates/ca-cert.pem"
+rabbitmq_tls_port: 5671
+...

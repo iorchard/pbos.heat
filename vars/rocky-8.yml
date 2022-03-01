@@ -1,0 +1,19 @@
+---
+packages:
+  - openstack-heat-api
+  - openstack-heat-api-cfn
+  - openstack-heat-engine
+
+mariadb_service_socket: "/var/lib/mysql/mysql.sock"
+
+os_service_init: []
+
+os_conf_dir: "/etc/heat"
+os_service_conf: 
+  - {dest: "{{ os_conf_dir }}/heat.conf"}
+
+os_systemd_service_name:
+  - openstack-heat-api.service
+  - openstack-heat-api-cfn.service
+  - openstack-heat-engine.service
+...
