@@ -1,6 +1,6 @@
 galaxy_info:
   namespace: pbos
-  role_name: glance
+  role_name: heat
   author: "Heechul Kim <jijisa@iorchard.net>"
   description: Ansible Role to install and setup Heat for OpenStack
   company: iOrchard, Inc.

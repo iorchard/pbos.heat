@@ -1,7 +1,7 @@
 ---
 - name: Delete | import common tasks
   tags:
-    - glance
+    - heat
     - openstack
   ansible.builtin.import_tasks: "common.yml"
 
