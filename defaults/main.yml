@@ -11,9 +11,13 @@ keystone_port: 5000
 heat_port: 8004
 heat_cfn_port: 8000
 os_endpoint_interface:
-  - public
-  - internal
-  - admin
+  - { name: 'public', url: "http://{{ keepalived_vip_svc | ternary(keepalived_vip_svc, keepalived_vip) }}:{{ heat_port }}/v1/%(tenant_id)s" }
+  - { name: 'internal', url: "http://{{ keepalived_vip }}:{{ heat_port }}/v1/%(tenant_id)s" }
+  - { name: 'admin', url: "http://{{ keepalived_vip }}:{{ heat_port }}/v1/%(tenant_id)s" }
+os_endpoint_interface_cfn:
+  - { name: 'public', url: "http://{{ keepalived_vip_svc | ternary(keepalived_vip_svc, keepalived_vip) }}:{{ heat_cfn_port }}/v1" }
+  - { name: 'internal', url: "http://{{ keepalived_vip }}:{{ heat_cfn_port }}/v1" }
+  - { name: 'admin', url: "http://{{ keepalived_vip }}:{{ heat_cfn_port }}/v1" }
 mariadb_ca_cert: "/etc/my.cnf.d/certificates/ca-cert.pem"
 rabbitmq_ca_cert: "/etc/rabbitmq/certificates/ca-cert.pem"
 rabbitmq_tls_port: 5671
