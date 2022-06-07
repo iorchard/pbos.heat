@@ -1,5 +1,5 @@
 [DEFAULT]
-#num_engine_workers = 4
+num_engine_workers = 4
 environment_dir = /etc/heat/environment.d
 template_dir = /etc/heat/templates
 max_resources_per_stack = 1000
@@ -38,6 +38,7 @@ heat_waitcondition_server_url = http://{{ keepalived_vip }}:{{ heat_cfn_port }}/
 stack_domain_admin = heat_domain_admin
 stack_domain_admin_password = {{ os_password }}
 stack_user_domain_name = heat
+server_keystone_endpoint_type = public
 
 [auth_password]
 [clients]
