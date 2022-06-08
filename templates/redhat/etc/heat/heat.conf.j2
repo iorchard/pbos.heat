@@ -38,7 +38,10 @@ heat_waitcondition_server_url = http://{{ keepalived_vip }}:{{ heat_cfn_port }}/
 stack_domain_admin = heat_domain_admin
 stack_domain_admin_password = {{ os_password }}
 stack_user_domain_name = heat
-server_keystone_endpoint_type = public
+# this option does not work for magnum k8s cluster
+# it adds /v3 so public keystone endpoint becomes http://<ip>:5000/v3//v3
+# So I commented in.
+#server_keystone_endpoint_type = public
 
 [auth_password]
 [clients]
@@ -49,7 +52,7 @@ server_keystone_endpoint_type = public
 [clients_glance]
 [clients_heat]
 [clients_keystone]
-auth_uri = http://{{ keepalived_vip }}:{{ keystone_port }}
+auth_uri = http://{{ keepalived_vip_svc | ternary(keepalived_vip_svc, keepalived_vip) }}:{{ keystone_port }}
 [clients_magnum]
 [clients_manila]
 [clients_mistral]
