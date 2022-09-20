@@ -1,5 +1,5 @@
 [DEFAULT]
-num_engine_workers = 4
+num_engine_workers = {{ heat_engine_workers }}
 environment_dir = /etc/heat/environment.d
 template_dir = /etc/heat/templates
 max_resources_per_stack = 1000
@@ -74,6 +74,7 @@ connection = mysql+pymysql://{{ os_service_name }}:{{ db_password }}@{{ keepaliv
 [healthcheck]
 [heat_api]
 bind_host = {{ ansible_host }}
+workers = {{ heat_api_workers }}
 [heat_api_cfn]
 bind_host = {{ ansible_host }}
 [keystone_authtoken]
